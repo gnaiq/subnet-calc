@@ -92,9 +92,14 @@ jobs:
       - name: Build release
         run: cargo build --release --verbose
 
+      - name: Rename binary for release
+        shell: bash
+        run: |
+          cp "${{ matrix.binary }}" "${{ matrix.asset }}"
+
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.binary }}
+          files: ${{ matrix.asset }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
