@@ -61,4 +61,6 @@ cargo test
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=gnaiq/subnet-calc&type=Date)](https://star-history.com/#gnaiq/subnet-calc&Date)
+[![Star History Chart](./star-history.svg)](https://star-history.com/#gnaiq/subnet-calc&Date)
+
+> 上图为仓库创建初期的快照（当前 0 ★）。点击图表可跳转 [star-history.com](https://star-history.com/#gnaiq/subnet-calc&Date) 查看实时星标曲线。star-history 服务端偶有限流，实时图恢复后亦可直接访问该链接。
