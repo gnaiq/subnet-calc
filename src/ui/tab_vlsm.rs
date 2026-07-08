@@ -70,7 +70,8 @@ impl VlsmState {
         ui.horizontal(|ui| {
             if ui.button("+ 添加需求").clicked() {
                 let n = self.requirements.len() + 1;
-                self.requirements.push((format!("子网{}", n), "10".to_string()));
+                self.requirements
+                    .push((format!("子网{}", n), "10".to_string()));
             }
             if ui.button("计算").clicked() {
                 self.compute();

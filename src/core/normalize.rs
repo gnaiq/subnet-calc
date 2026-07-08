@@ -44,7 +44,10 @@ mod tests {
 
     #[test]
     fn fullwidth_digits() {
-        assert_eq!(normalize_input("１９２．１６８．１．１／２４"), "192.168.1.1/24");
+        assert_eq!(
+            normalize_input("１９２．１６８．１．１／２４"),
+            "192.168.1.1/24"
+        );
     }
 
     #[test]

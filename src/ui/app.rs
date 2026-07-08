@@ -60,13 +60,11 @@ impl eframe::App for App {
             }
         }
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            match self.tab {
-                Tab::Basic => self.basic.show(ui, ctx),
-                Tab::Vlsm => self.vlsm.show(ui, ctx),
-                Tab::Convert => self.convert.show(ui, ctx),
-                Tab::Check => self.check.show(ui, ctx),
-            }
+        egui::CentralPanel::default().show(ctx, |ui| match self.tab {
+            Tab::Basic => self.basic.show(ui, ctx),
+            Tab::Vlsm => self.vlsm.show(ui, ctx),
+            Tab::Convert => self.convert.show(ui, ctx),
+            Tab::Check => self.check.show(ui, ctx),
         });
     }
 }

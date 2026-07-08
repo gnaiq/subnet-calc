@@ -170,10 +170,7 @@ mod tests {
             })
         );
         assert_eq!(parse_ipv4("1.2.3"), Err(IpError::WrongSegmentCount(3)));
-        assert_eq!(
-            parse_ipv4("1.2.3.4.5"),
-            Err(IpError::WrongSegmentCount(5))
-        );
+        assert_eq!(parse_ipv4("1.2.3.4.5"), Err(IpError::WrongSegmentCount(5)));
         assert_eq!(
             parse_ipv4("a.b.c.d"),
             Err(IpError::SegmentNotNumber("a".to_string()))
@@ -194,10 +191,7 @@ mod tests {
 
     #[test]
     fn to_binary_works() {
-        assert_eq!(
-            to_binary(0xC0A80101),
-            "11000000.10101000.00000001.00000001"
-        );
+        assert_eq!(to_binary(0xC0A80101), "11000000.10101000.00000001.00000001");
     }
 
     #[test]

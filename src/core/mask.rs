@@ -23,7 +23,11 @@ impl fmt::Display for MaskError {
                 write!(f, "点分十进制段数错误: {}（应为 4 段）", n)
             }
             MaskError::SegmentOutOfRange { segment, value } => {
-                write!(f, "段 {} 的值 {} 超出范围（应在 0-255 之间）", segment, value)
+                write!(
+                    f,
+                    "段 {} 的值 {} 超出范围（应在 0-255 之间）",
+                    segment, value
+                )
             }
         }
     }
@@ -77,7 +81,9 @@ pub fn parse_mask(s: &str) -> Result<u8, MaskError> {
         }
         let mut bytes: [u32; 4] = [0; 4];
         for (i, part) in parts.iter().enumerate() {
-            let v: u32 = part.parse().map_err(|_| MaskError::NotNumber(part.to_string()))?;
+            let v: u32 = part
+                .parse()
+                .map_err(|_| MaskError::NotNumber(part.to_string()))?;
             if v > 255 {
                 return Err(MaskError::SegmentOutOfRange {
                     segment: part.to_string(),
@@ -174,7 +180,10 @@ mod tests {
             parse_mask("255.255.255.1"),
             Err(MaskError::InvalidMask(0xFFFFFF01))
         );
-        assert_eq!(parse_mask("abc"), Err(MaskError::NotNumber("abc".to_string())));
+        assert_eq!(
+            parse_mask("abc"),
+            Err(MaskError::NotNumber("abc".to_string()))
+        );
         assert_eq!(parse_mask(""), Err(MaskError::Empty));
         assert_eq!(parse_mask("1.2.3"), Err(MaskError::WrongSegmentCount(3)));
         assert_eq!(

@@ -1,4 +1,4 @@
-use eframe::egui::{Color32, FontDefinitions, FontData};
+use eframe::egui::{Color32, FontData, FontDefinitions};
 
 pub const BG: Color32 = Color32::from_rgb(30, 30, 36);
 pub const ACCENT: Color32 = Color32::from_rgb(86, 156, 214);
