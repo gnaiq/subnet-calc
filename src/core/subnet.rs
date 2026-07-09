@@ -39,7 +39,7 @@ impl From<MaskError> for SubnetError {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct SubnetInfo {
     pub network: u32,
     pub broadcast: u32,

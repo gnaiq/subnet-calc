@@ -1,5 +1,8 @@
 use eframe::egui;
+#[cfg(not(target_arch = "wasm32"))]
+use rfd::FileDialog;
 
+use crate::core::export;
 use crate::core::ip;
 use crate::core::vlsm::{self, VlsmResult};
 use crate::theme;
@@ -156,10 +159,82 @@ impl VlsmState {
             }
         }
 
-        if let Some((text, t)) = &self.copied {
-            let now = ctx.input(|i| i.time);
-            if now - t < 1.5 {
-                ui.colored_label(theme::SUCCESS, format!("已复制: {}", text));
+            // 导出按钮区域
+            ui.add_space(12.0);
+            if let Some(result) = &self.result {
+                let result_clone = result.clone();
+                ui.horizontal(|ui| {
+                    ui.label("导出:");
+                    if ui.button("JSON").clicked() {
+                        self.export_json(ctx, &result_clone);
+                    }
+                    if ui.button("CSV").clicked() {
+                        self.export_csv(ctx, &result_clone);
+                    }
+                    if ui.button("Markdown").clicked() {
+                        self.export_markdown(ctx, &result_clone);
+                    }
+                });
+            }
+
+            if let Some((text, t)) = &self.copied {
+                let now = ctx.input(|i| i.time);
+                if now - t < 1.5 {
+                    ui.colored_label(theme::SUCCESS, format!("已复制: {}", text));
+                }
+            }
+    }
+
+    fn export_json(&mut self, _ctx: &egui::Context, result: &VlsmResult) {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let json = export::export_vlsm_json(result);
+            if let Some(path) = FileDialog::new()
+                .add_filter("JSON Files", &["json"])
+                .set_file_name("vlsm_result.json")
+                .save_file()
+            {
+                use std::fs;
+                use std::io::Write;
+                if let Ok(mut file) = fs::File::create(&path) {
+                    let _ = file.write_all(json.as_bytes());
+                }
+            }
+        }
+    }
+
+    fn export_csv(&mut self, _ctx: &egui::Context, result: &VlsmResult) {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let csv = export::export_vlsm_csv(result);
+            if let Some(path) = FileDialog::new()
+                .add_filter("CSV Files", &["csv"])
+                .set_file_name("vlsm_result.csv")
+                .save_file()
+            {
+                use std::fs;
+                use std::io::Write;
+                if let Ok(mut file) = fs::File::create(&path) {
+                    let _ = file.write_all(csv.as_bytes());
+                }
+            }
+        }
+    }
+
+    fn export_markdown(&mut self, _ctx: &egui::Context, result: &VlsmResult) {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let md = export::export_vlsm_markdown(result);
+            if let Some(path) = FileDialog::new()
+                .add_filter("Markdown Files", &["md"])
+                .set_file_name("vlsm_result.md")
+                .save_file()
+            {
+                use std::fs;
+                use std::io::Write;
+                if let Ok(mut file) = fs::File::create(&path) {
+                    let _ = file.write_all(md.as_bytes());
+                }
             }
         }
     }

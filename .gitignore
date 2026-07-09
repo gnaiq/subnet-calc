@@ -1,2 +1,8 @@
 /target
 .vscode/
+/graphify-out
+/_check_cache.py
+/_merge_extract.py
+/_step4_build.py
+/_step5_label.py
+/_step9_cleanup.py

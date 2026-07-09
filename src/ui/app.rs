@@ -1,6 +1,6 @@
 use eframe::egui;
 
-use crate::ui::{tab_basic, tab_check, tab_convert, tab_vlsm};
+use crate::ui::{tab_basic, tab_check, tab_convert, tab_history, tab_vlsm};
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum Tab {
@@ -8,6 +8,7 @@ pub enum Tab {
     Vlsm,
     Convert,
     Check,
+    History,
 }
 
 pub struct App {
@@ -16,6 +17,7 @@ pub struct App {
     pub vlsm: tab_vlsm::VlsmState,
     pub convert: tab_convert::ConvertState,
     pub check: tab_check::CheckState,
+    pub history: tab_history::HistoryState,
     pub clipboard_msg: Option<String>,
     pub clipboard_msg_time: f64,
 }
@@ -28,6 +30,7 @@ impl Default for App {
             vlsm: Default::default(),
             convert: Default::default(),
             check: Default::default(),
+            history: Default::default(),
             clipboard_msg: None,
             clipboard_msg_time: 0.0,
         }
@@ -45,6 +48,7 @@ impl eframe::App for App {
                 ui.selectable_value(&mut self.tab, Tab::Vlsm, "VLSM 划分");
                 ui.selectable_value(&mut self.tab, Tab::Convert, "格式转换");
                 ui.selectable_value(&mut self.tab, Tab::Check, "包含与聚合");
+                ui.selectable_value(&mut self.tab, Tab::History, "历史记录");
             });
             ui.separator();
         });
@@ -65,6 +69,7 @@ impl eframe::App for App {
             Tab::Vlsm => self.vlsm.show(ui, ctx),
             Tab::Convert => self.convert.show(ui, ctx),
             Tab::Check => self.check.show(ui, ctx),
+            Tab::History => self.history.show(ui, ctx),
         });
     }
 }
