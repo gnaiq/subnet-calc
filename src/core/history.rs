@@ -28,7 +28,9 @@ pub struct HistoryStore {
 impl Default for HistoryStore {
     fn default() -> Self {
         let home = std::env::var("HOME").unwrap_or_else(|_| "~".to_string());
-        let storage_path = PathBuf::from(&home).join(".subnet-calc").join("history.json");
+        let storage_path = PathBuf::from(&home)
+            .join(".subnet-calc")
+            .join("history.json");
 
         let store = Self {
             entries: Vec::new(),
@@ -126,9 +128,12 @@ mod tests {
 
     fn temp_storage_path() -> PathBuf {
         let tid = std::thread::current().id();
-        let tid_str = format!("{:?}", tid)
-            .replace(|c: char| !c.is_alphanumeric(), "_");
-        std::env::temp_dir().join(format!("subnet_calc_test_{}_{}.json", std::process::id(), tid_str))
+        let tid_str = format!("{:?}", tid).replace(|c: char| !c.is_alphanumeric(), "_");
+        std::env::temp_dir().join(format!(
+            "subnet_calc_test_{}_{}.json",
+            std::process::id(),
+            tid_str
+        ))
     }
 
     fn create_test_entry(input: &str) -> HistoryEntry {
@@ -197,12 +202,12 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         for i in 0..5 {
             let info = subnet::analyze("192.168.1.1/24").unwrap();
             store.add(&format!("entry_{}", i), info);
         }
-        
+
         assert_eq!(store.entries().len(), 5);
         let _ = fs::remove_file(&path);
     }
@@ -215,10 +220,10 @@ mod tests {
             storage_path: path.clone(),
         };
         let info = subnet::analyze("192.168.1.1/24").unwrap();
-        
+
         store.add("192.168.1.1/24", info.clone());
         store.add("192.168.1.1/24", info);
-        
+
         assert_eq!(store.entries().len(), 1);
         let _ = fs::remove_file(&path);
     }
@@ -230,13 +235,13 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info1 = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("first", info1);
-        
+
         let info2 = subnet::analyze("10.0.0.1/8").unwrap();
         store.add("second", info2);
-        
+
         assert_eq!(store.entries()[0].input, "second");
         assert_eq!(store.entries()[1].input, "first");
         let _ = fs::remove_file(&path);
@@ -249,12 +254,12 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         for i in 0..3 {
             let info = subnet::analyze("192.168.1.1/24").unwrap();
             store.add(&format!("entry_{}", i), info);
         }
-        
+
         assert_eq!(store.entries().len(), 3);
         store.remove(1);
         assert_eq!(store.entries().len(), 2);
@@ -270,7 +275,7 @@ mod tests {
         };
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("entry", info);
-        
+
         store.remove(10); // Should not panic
         assert_eq!(store.entries().len(), 1);
         let _ = fs::remove_file(&path);
@@ -283,12 +288,12 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         for i in 0..5 {
             let info = subnet::analyze("192.168.1.1/24").unwrap();
             store.add(&format!("entry_{}", i), info);
         }
-        
+
         store.clear();
         assert!(store.entries().is_empty());
         let _ = fs::remove_file(&path);
@@ -301,10 +306,10 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("192.168.1.1/24", info);
-        
+
         let results = store.search("192.168");
         assert_eq!(results.len(), 1);
         let _ = fs::remove_file(&path);
@@ -317,10 +322,10 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("192.168.1.1/24", info);
-        
+
         let results = store.search("nonexistent");
         assert!(results.is_empty());
         let _ = fs::remove_file(&path);
@@ -333,10 +338,10 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("TestEntry", info);
-        
+
         let results = store.search("test");
         assert_eq!(results.len(), 1);
         let _ = fs::remove_file(&path);
@@ -349,10 +354,10 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("192.168.1.1/24", info);
-        
+
         let results = store.search(".1.");
         assert_eq!(results.len(), 1);
         let _ = fs::remove_file(&path);
@@ -361,7 +366,7 @@ mod tests {
     #[test]
     fn test_history_store_save_and_load() {
         let path = temp_storage_path();
-        
+
         {
             let mut store = HistoryStore {
                 entries: Vec::new(),
@@ -369,7 +374,7 @@ mod tests {
             };
             let info = subnet::analyze("192.168.1.1/24").unwrap();
             store.add("192.168.1.1/24", info);
-            
+
             // add() calls save() internally, so file should exist now
             assert!(path.exists());
         }
@@ -380,7 +385,7 @@ mod tests {
                 storage_path: path.clone(),
             };
             store.load();
-            
+
             assert_eq!(store.entries().len(), 1);
             assert_eq!(store.entries()[0].input, "192.168.1.1/24");
         }
@@ -396,7 +401,7 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         store.load();
         assert!(store.entries().is_empty());
         let _ = fs::remove_file(&path);
@@ -405,75 +410,75 @@ mod tests {
     #[test]
     fn test_history_store_load_invalid_json() {
         let path = temp_storage_path();
-        
+
         fs::write(&path, "{invalid json}").unwrap();
-        
+
         let mut store = HistoryStore {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
         store.load();
-        
+
         assert!(store.entries().is_empty());
-        
+
         let _ = fs::remove_file(&path);
     }
 
     #[test]
     fn test_history_store_load_valid_empty_array() {
         let path = temp_storage_path();
-        
+
         fs::write(&path, "[]").unwrap();
-        
+
         let mut store = HistoryStore {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
         store.load();
-        
+
         assert!(store.entries().is_empty());
-        
+
         let _ = fs::remove_file(&path);
     }
 
     #[test]
     fn test_history_store_load_multiple_entries() {
         let path = temp_storage_path();
-        
+
         let entries = vec![
             create_test_entry("entry_1"),
             create_test_entry("entry_2"),
             create_test_entry("entry_3"),
         ];
-        
+
         let json = serde_json::to_string_pretty(&entries).unwrap();
         fs::write(&path, json).unwrap();
-        
+
         let mut store = HistoryStore {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
         store.load();
-        
+
         assert_eq!(store.entries().len(), 3);
-        
+
         let _ = fs::remove_file(&path);
     }
 
     #[test]
     fn test_history_store_preserves_order_after_load() {
         let path = temp_storage_path();
-        
+
         let mut store = HistoryStore {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         for i in 0..5 {
             let info = subnet::analyze("192.168.1.1/24").unwrap();
             store.add(&format!("entry_{}", i), info);
         }
-        
+
         // Save manually
         if let Ok(content) = serde_json::to_string_pretty(&store.entries) {
             fs::write(&path, content).unwrap();
@@ -485,28 +490,28 @@ mod tests {
             storage_path: path.clone(),
         };
         loaded_store.load();
-        
+
         assert_eq!(loaded_store.entries().len(), 5);
         assert_eq!(loaded_store.entries()[0].input, "entry_4");
         assert_eq!(loaded_store.entries()[4].input, "entry_0");
-        
+
         let _ = fs::remove_file(&path);
     }
 
     #[test]
     fn test_history_store_directory_creation() {
         let path = temp_storage_path();
-        
+
         let mut store = HistoryStore {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("test", info);
-        
+
         assert!(path.exists());
-        
+
         let _ = fs::remove_file(&path);
     }
 
@@ -519,7 +524,7 @@ mod tests {
         };
         let info = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("test", info);
-        
+
         let entries: &[HistoryEntry] = store.entries();
         assert_eq!(entries.len(), 1);
         let _ = fs::remove_file(&path);
@@ -558,10 +563,10 @@ mod tests {
             storage_path: path.clone(),
         };
         let info = subnet::analyze("192.168.1.1/24").unwrap();
-        
+
         let long_input = "a".repeat(1000);
         store.add(&long_input, info);
-        
+
         assert_eq!(store.entries().len(), 1);
         assert_eq!(store.entries()[0].input.len(), 1000);
         let _ = fs::remove_file(&path);
@@ -575,9 +580,9 @@ mod tests {
             storage_path: path.clone(),
         };
         let info = subnet::analyze("192.168.1.1/24").unwrap();
-        
+
         store.add("测试_子网", info);
-        
+
         assert_eq!(store.entries().len(), 1);
         assert_eq!(store.entries()[0].input, "测试_子网");
         let _ = fs::remove_file(&path);
@@ -590,16 +595,16 @@ mod tests {
             entries: Vec::new(),
             storage_path: path.clone(),
         };
-        
+
         let info1 = subnet::analyze("10.0.0.1/8").unwrap();
         store.add("10.0.0.1/8", info1);
-        
+
         let info2 = subnet::analyze("172.16.0.1/12").unwrap();
         store.add("172.16.0.1/12", info2);
-        
+
         let info3 = subnet::analyze("192.168.1.1/24").unwrap();
         store.add("192.168.1.1/24", info3);
-        
+
         assert_eq!(store.entries().len(), 3);
         assert_eq!(store.entries()[0].result.cidr, 24);
         assert_eq!(store.entries()[1].result.cidr, 12);

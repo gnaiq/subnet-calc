@@ -43,21 +43,24 @@ pub fn export_json(info: &SubnetInfo) -> String {
 
 /// 将多个子网信息导出为 JSON 数组
 pub fn export_json_array(infos: &[SubnetInfo]) -> String {
-    let array: Vec<serde_json::Value> = infos.iter().map(|info| {
-        serde_json::json!({
-            "network": to_dotted(info.network),
-            "broadcast": to_dotted(info.broadcast),
-            "mask": to_dotted(info.mask),
-            "wildcard": to_dotted(info.wildcard),
-            "cidr": cidr_representation(info),
-            "total_ips": info.total_ips,
-            "usable_ips": info.usable_ips,
-            "first_host": to_dotted(info.first_host),
-            "last_host": to_dotted(info.last_host),
-            "ip_class": info.ip_class.description(),
-            "is_private": info.is_private,
+    let array: Vec<serde_json::Value> = infos
+        .iter()
+        .map(|info| {
+            serde_json::json!({
+                "network": to_dotted(info.network),
+                "broadcast": to_dotted(info.broadcast),
+                "mask": to_dotted(info.mask),
+                "wildcard": to_dotted(info.wildcard),
+                "cidr": cidr_representation(info),
+                "total_ips": info.total_ips,
+                "usable_ips": info.usable_ips,
+                "first_host": to_dotted(info.first_host),
+                "last_host": to_dotted(info.last_host),
+                "ip_class": info.ip_class.description(),
+                "is_private": info.is_private,
+            })
         })
-    }).collect();
+        .collect();
     serde_json::to_string_pretty(&array).unwrap_or_default()
 }
 
@@ -79,7 +82,9 @@ pub fn export_csv_line(info: &SubnetInfo) -> String {
 
 /// 将子网信息导出为带表头的 CSV
 pub fn export_csv_with_header(infos: &[SubnetInfo]) -> String {
-    let mut output = String::from("CIDR,网络地址,广播地址,子网掩码,反掩码,IP总数,可用主机数,首个可用IP,末个可用IP\n");
+    let mut output = String::from(
+        "CIDR,网络地址,广播地址,子网掩码,反掩码,IP总数,可用主机数,首个可用IP,末个可用IP\n",
+    );
     for info in infos {
         output.push_str(&export_csv_line(info));
         output.push('\n');
@@ -132,23 +137,26 @@ fn cidr_representation(info: &SubnetInfo) -> String {
 
 /// 将历史记录导出为 JSON 数组（包含时间戳和输入）
 pub fn export_history_json(entries: &[HistoryEntry]) -> String {
-    let array: Vec<serde_json::Value> = entries.iter().map(|entry| {
-        serde_json::json!({
-            "timestamp": entry.timestamp.to_rfc3339(),
-            "input": entry.input,
-            "network": to_dotted(entry.result.network),
-            "broadcast": to_dotted(entry.result.broadcast),
-            "mask": to_dotted(entry.result.mask),
-            "wildcard": to_dotted(entry.result.wildcard),
-            "cidr": cidr_representation(&entry.result),
-            "total_ips": entry.result.total_ips,
-            "usable_ips": entry.result.usable_ips,
-            "first_host": to_dotted(entry.result.first_host),
-            "last_host": to_dotted(entry.result.last_host),
-            "ip_class": entry.result.ip_class.description(),
-            "is_private": entry.result.is_private,
+    let array: Vec<serde_json::Value> = entries
+        .iter()
+        .map(|entry| {
+            serde_json::json!({
+                "timestamp": entry.timestamp.to_rfc3339(),
+                "input": entry.input,
+                "network": to_dotted(entry.result.network),
+                "broadcast": to_dotted(entry.result.broadcast),
+                "mask": to_dotted(entry.result.mask),
+                "wildcard": to_dotted(entry.result.wildcard),
+                "cidr": cidr_representation(&entry.result),
+                "total_ips": entry.result.total_ips,
+                "usable_ips": entry.result.usable_ips,
+                "first_host": to_dotted(entry.result.first_host),
+                "last_host": to_dotted(entry.result.last_host),
+                "ip_class": entry.result.ip_class.description(),
+                "is_private": entry.result.is_private,
+            })
         })
-    }).collect();
+        .collect();
     serde_json::to_string_pretty(&array).unwrap_or_default()
 }
 
@@ -205,7 +213,9 @@ pub fn export_vlsm_json(result: &VlsmResult) -> String {
 
 /// 将 VLSM 结果导出为带表头的 CSV
 pub fn export_vlsm_csv(result: &VlsmResult) -> String {
-    let mut output = String::from("名称,需求主机数,块大小,网络地址,CIDR,掩码,首个可用IP,末个可用IP,广播地址,可用主机数\n");
+    let mut output = String::from(
+        "名称,需求主机数,块大小,网络地址,CIDR,掩码,首个可用IP,末个可用IP,广播地址,可用主机数\n",
+    );
     for e in &result.allocated {
         output.push_str(&format!(
             "{},{},{},{},{},{},{},{},{},{}\n",
@@ -255,7 +265,10 @@ pub fn export_vlsm_markdown(result: &VlsmResult) -> String {
         output.push_str("| 名称 | 需求主机数 | 原因 |\n");
         output.push_str("|------|------------|------|\n");
         for f in &result.failed {
-            output.push_str(&format!("| {} | {} | {} |\n", f.name, f.required_hosts, f.reason));
+            output.push_str(&format!(
+                "| {} | {} | {} |\n",
+                f.name, f.required_hosts, f.reason
+            ));
         }
     }
     output
@@ -322,7 +335,9 @@ mod tests {
     fn export_csv_with_header_has_header() {
         let info = sample_subnet_info();
         let csv = export_csv_with_header(&[info]);
-        assert!(csv.starts_with("CIDR,网络地址,广播地址,子网掩码,反掩码,IP总数,可用主机数,首个可用IP,末个可用IP\n"));
+        assert!(csv.starts_with(
+            "CIDR,网络地址,广播地址,子网掩码,反掩码,IP总数,可用主机数,首个可用IP,末个可用IP\n"
+        ));
     }
 
     #[test]
@@ -366,7 +381,11 @@ mod tests {
         let info2 = subnet::analyze("10.0.0.1/8").unwrap();
         let table = export_markdown_table(&[info1, info2]);
         let lines: Vec<&str> = table.lines().collect();
-        assert_eq!(lines.len(), 4, "Should have header + separator + 2 data rows");
+        assert_eq!(
+            lines.len(),
+            4,
+            "Should have header + separator + 2 data rows"
+        );
     }
 
     // === Batch Export Functions ===
@@ -457,11 +476,9 @@ mod tests {
     fn export_vlsm_json_allocated_entries() {
         let result = vlsm::vlsm(
             "192.168.1.0/24",
-            vec![
-                ("子网1".to_string(), 100),
-                ("子网2".to_string(), 50),
-            ],
-        ).unwrap();
+            vec![("子网1".to_string(), 100), ("子网2".to_string(), 50)],
+        )
+        .unwrap();
         let json = export_vlsm_json(&result);
         assert!(json.contains("\"allocated\""));
         assert!(json.contains("\"子网1\""));
@@ -470,12 +487,7 @@ mod tests {
 
     #[test]
     fn export_vlsm_json_failed_entries() {
-        let result = vlsm::vlsm(
-            "192.168.1.0/24",
-            vec![
-                ("A".to_string(), 300),
-            ],
-        ).unwrap();
+        let result = vlsm::vlsm("192.168.1.0/24", vec![("A".to_string(), 300)]).unwrap();
         let json = export_vlsm_json(&result);
         assert!(json.contains("\"failed\""));
         assert!(json.contains("\"A\""));
@@ -495,21 +507,17 @@ mod tests {
 
     #[test]
     fn export_vlsm_csv_allocated_section() {
-        let result = vlsm::vlsm(
-            "192.168.1.0/24",
-            vec![("子网1".to_string(), 10)],
-        ).unwrap();
+        let result = vlsm::vlsm("192.168.1.0/24", vec![("子网1".to_string(), 10)]).unwrap();
         let csv = export_vlsm_csv(&result);
-        assert!(csv.starts_with("名称,需求主机数,块大小,网络地址,CIDR,掩码,首个可用IP,末个可用IP,广播地址,可用主机数\n"));
+        assert!(csv.starts_with(
+            "名称,需求主机数,块大小,网络地址,CIDR,掩码,首个可用IP,末个可用IP,广播地址,可用主机数\n"
+        ));
         assert!(csv.contains("子网1"));
     }
 
     #[test]
     fn export_vlsm_csv_failed_section() {
-        let result = vlsm::vlsm(
-            "192.168.1.0/24",
-            vec![("A".to_string(), 300)],
-        ).unwrap();
+        let result = vlsm::vlsm("192.168.1.0/24", vec![("A".to_string(), 300)]).unwrap();
         let csv = export_vlsm_csv(&result);
         assert!(csv.contains("失败项:"));
         assert!(csv.contains("名称,需求主机数,原因"));
@@ -528,10 +536,7 @@ mod tests {
 
     #[test]
     fn export_vlsm_markdown_allocated_section() {
-        let result = vlsm::vlsm(
-            "192.168.1.0/24",
-            vec![("子网1".to_string(), 10)],
-        ).unwrap();
+        let result = vlsm::vlsm("192.168.1.0/24", vec![("子网1".to_string(), 10)]).unwrap();
         let md = export_vlsm_markdown(&result);
         assert!(md.starts_with("| 名称 | 需求主机数 | 块大小 |"));
         assert!(md.contains("子网1"));
@@ -539,10 +544,7 @@ mod tests {
 
     #[test]
     fn export_vlsm_markdown_failed_section() {
-        let result = vlsm::vlsm(
-            "192.168.1.0/24",
-            vec![("A".to_string(), 300)],
-        ).unwrap();
+        let result = vlsm::vlsm("192.168.1.0/24", vec![("A".to_string(), 300)]).unwrap();
         let md = export_vlsm_markdown(&result);
         assert!(md.contains("**失败项:**"));
     }

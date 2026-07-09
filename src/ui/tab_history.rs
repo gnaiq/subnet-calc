@@ -27,7 +27,7 @@ impl HistoryState {
     pub fn show(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         // 切换标签页时重新加载历史数据
         self.store.load();
-        
+
         ui.label("历史记录");
         ui.add_space(8.0);
 
@@ -101,21 +101,28 @@ impl HistoryState {
             .show(ui, |ui| {
                 // 获取所有条目的原始索引和引用
                 let all_entries = self.store.entries();
-                
+
                 // 确定要显示的条目及其原始索引
-                let items_to_display: Vec<(usize, &HistoryEntry)> = if self.search_keyword.trim().is_empty() {
-                    all_entries.iter().enumerate().map(|(i, e)| (i, e)).collect()
-                } else {
-                    let kw = self.search_keyword.to_lowercase();
-                    all_entries.iter().enumerate()
-                        .filter(|(_, e)| e.input.to_lowercase().contains(&kw))
-                        .map(|(i, e)| (i, e))
-                        .collect()
-                };
-                
+                let items_to_display: Vec<(usize, &HistoryEntry)> =
+                    if self.search_keyword.trim().is_empty() {
+                        all_entries
+                            .iter()
+                            .enumerate()
+                            .map(|(i, e)| (i, e))
+                            .collect()
+                    } else {
+                        let kw = self.search_keyword.to_lowercase();
+                        all_entries
+                            .iter()
+                            .enumerate()
+                            .filter(|(_, e)| e.input.to_lowercase().contains(&kw))
+                            .map(|(i, e)| (i, e))
+                            .collect()
+                    };
+
                 // 收集需要删除的索引
                 let mut to_delete: Vec<usize> = Vec::new();
-                
+
                 for (orig_idx, entry) in items_to_display {
                     ui.horizontal(|ui| {
                         // 时间戳
@@ -151,7 +158,7 @@ impl HistoryState {
                     });
                     ui.add_space(4.0);
                 }
-                
+
                 // 在循环结束后执行删除操作
                 for idx in to_delete.into_iter().rev() {
                     self.store.remove(idx);

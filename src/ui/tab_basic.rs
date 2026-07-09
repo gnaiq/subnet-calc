@@ -70,12 +70,12 @@ impl BasicState {
             if !self.results.is_empty() {
                 ui.add_space(12.0);
                 ui.label(format!("共 {} 条结果:", self.results.len()));
-                
+
                 for (i, item) in self.results.iter().enumerate() {
                     let input_text = item.input_text.clone();
                     let error = item.error.clone();
                     let info = item.info.clone();
-                    
+
                     ui.collapsing(format!("{}. {}", i + 1, &input_text), |ui| {
                         let ctx_local = ctx.clone();
                         if let Some(ref err) = error {
@@ -130,7 +130,7 @@ impl BasicState {
                                     ui.label("");
                                     ui.end_row();
                                 });
-                            
+
                             // 导出按钮
                             ui.add_space(8.0);
                             ui.horizontal(|ui| {
@@ -415,7 +415,8 @@ impl BasicState {
                 self.result = Some(info);
                 self.error = None;
                 // 添加到历史记录
-                self.history.add(&self.input, self.result.as_ref().unwrap().clone());
+                self.history
+                    .add(&self.input, self.result.as_ref().unwrap().clone());
             }
             Err(e) => {
                 self.result = None;
@@ -435,7 +436,7 @@ impl BasicState {
                 Ok(info) => {
                     // Add to history
                     self.history.add(line, info.clone());
-                    
+
                     self.results.push(ResultItem {
                         input_text: line.to_string(),
                         info,
@@ -471,7 +472,12 @@ impl BasicState {
     }
 
     fn export_batch_json(&mut self, _ctx: &egui::Context) {
-        let infos: Vec<SubnetInfo> = self.results.iter().filter(|r| r.error.is_none()).map(|r| r.info.clone()).collect();
+        let infos: Vec<SubnetInfo> = self
+            .results
+            .iter()
+            .filter(|r| r.error.is_none())
+            .map(|r| r.info.clone())
+            .collect();
         let json = export::export_json_array(&infos);
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -493,7 +499,12 @@ impl BasicState {
     }
 
     fn export_batch_csv(&mut self, _ctx: &egui::Context) {
-        let infos: Vec<SubnetInfo> = self.results.iter().filter(|r| r.error.is_none()).map(|r| r.info.clone()).collect();
+        let infos: Vec<SubnetInfo> = self
+            .results
+            .iter()
+            .filter(|r| r.error.is_none())
+            .map(|r| r.info.clone())
+            .collect();
         let csv = export::export_csv_with_header(&infos);
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -515,7 +526,12 @@ impl BasicState {
     }
 
     fn export_batch_markdown(&mut self, _ctx: &egui::Context) {
-        let infos: Vec<SubnetInfo> = self.results.iter().filter(|r| r.error.is_none()).map(|r| r.info.clone()).collect();
+        let infos: Vec<SubnetInfo> = self
+            .results
+            .iter()
+            .filter(|r| r.error.is_none())
+            .map(|r| r.info.clone())
+            .collect();
         let md = export::export_markdown_table(&infos);
         #[cfg(not(target_arch = "wasm32"))]
         {

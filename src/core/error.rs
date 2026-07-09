@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_core_error_display_vlsm() {
-        // vlsm() returns Ok even with invalid requirements (0 hosts), 
+        // vlsm() returns Ok even with invalid requirements (0 hosts),
         // it puts failures in the failed list. Use invalid network instead.
         let result = vlsm::vlsm("invalid", vec![("A".to_string(), 10)]);
         assert!(result.is_err());
@@ -109,7 +109,7 @@ mod tests {
         let ip_err = ip::parse_ipv4("999.999.999.999").unwrap_err();
         let core_err: CoreError = ip_err.into();
         match core_err {
-            CoreError::Ip(_) => {},
+            CoreError::Ip(_) => {}
             _ => panic!("Expected CoreError::Ip"),
         }
     }
@@ -120,7 +120,7 @@ mod tests {
         let mask_err = MaskError::InvalidMask(1);
         let core_err: CoreError = mask_err.into();
         match core_err {
-            CoreError::Mask(_) => {},
+            CoreError::Mask(_) => {}
             _ => panic!("Expected CoreError::Mask"),
         }
     }
@@ -130,7 +130,7 @@ mod tests {
         let subnet_err = subnet::analyze("invalid").unwrap_err();
         let core_err: CoreError = subnet_err.into();
         match core_err {
-            CoreError::Subnet(_) => {},
+            CoreError::Subnet(_) => {}
             _ => panic!("Expected CoreError::Subnet"),
         }
     }
@@ -141,7 +141,7 @@ mod tests {
         let vlsm_err = vlsm::vlsm("invalid", vec![("A".to_string(), 10)]).unwrap_err();
         let core_err: CoreError = vlsm_err.into();
         match core_err {
-            CoreError::Vlsm(_) => {},
+            CoreError::Vlsm(_) => {}
             _ => panic!("Expected CoreError::Vlsm"),
         }
     }
@@ -217,7 +217,7 @@ mod tests {
         ];
 
         assert_eq!(core_errs.len(), 4);
-        
+
         // Verify each variant displays correctly
         for err in &core_errs {
             let display = format!("{}", err);
@@ -229,11 +229,11 @@ mod tests {
     fn test_core_error_conversion_consistency() {
         // Test that Into/From conversions are consistent
         let ip_err = ip::parse_ipv4("999.999.999.999").unwrap_err();
-        
+
         // Using Into trait
         let core_err: CoreError = ip_err.clone().into();
         assert!(matches!(core_err, CoreError::Ip(_)));
-        
+
         // Using From trait explicitly
         let core_err2 = CoreError::Ip(ip_err);
         assert!(matches!(core_err2, CoreError::Ip(_)));
