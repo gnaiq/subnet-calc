@@ -29,6 +29,15 @@ impl Default for CheckState {
 
 impl CheckState {
     pub fn show(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
+        egui::ScrollArea::vertical()
+            .id_source("check_scroll")
+            .auto_shrink([false, false])
+            .show(ui, |ui| {
+                self.show_inner(ui, ctx);
+            });
+    }
+
+    fn show_inner(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         ui.label("两网段关系判断");
         ui.add_space(4.0);
 

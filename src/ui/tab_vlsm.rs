@@ -34,6 +34,15 @@ impl Default for VlsmState {
 
 impl VlsmState {
     pub fn show(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
+        egui::ScrollArea::vertical()
+            .id_source("vlsm_scroll")
+            .auto_shrink([false, false])
+            .show(ui, |ui| {
+                self.show_inner(ui, ctx);
+            });
+    }
+
+    fn show_inner(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         ui.horizontal(|ui| {
             ui.label("基础网段:");
             ui.add(
